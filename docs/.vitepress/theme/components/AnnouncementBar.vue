@@ -24,7 +24,7 @@ function dismiss() {
     <p class="rw-banner-text">
       <span class="dot" aria-hidden="true" />
       <span class="msg">{{ b.text }}</span>
-      <a v-if="b.link" :href="b.link.startsWith('http') ? b.link : withBase(b.link)">{{ b.linkText }} →</a>
+      <a v-if="b.link" :href="/^[a-z]+:/i.test(b.link) ? b.link : withBase(b.link)">{{ b.linkText }}</a>
     </p>
     <button type="button" class="close" aria-label="Dismiss announcement" @click="dismiss">
       <RwIcon name="x" :size="16" :stroke="2" />

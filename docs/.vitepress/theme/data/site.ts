@@ -3,10 +3,10 @@ export const site = {
   /** Thin bar above the nav. Change `id` whenever the message changes so people who dismissed the old one see the new one. */
   banner: {
     enabled: true,
-    id: 'beta-1',
-    text: 'The private beta is open — these docs track the 1.0 beta.',
-    linkText: 'See what’s new',
-    link: '/changelog'
+    id: 'docs-updating-1',
+    text: 'We’re actively updating these docs. Found an issue? Let us know at',
+    linkText: 'contact@rootwrightlms.com',
+    link: 'mailto:contact@rootwrightlms.com'
   },
 
   /** Button at the right of the nav bar. */
