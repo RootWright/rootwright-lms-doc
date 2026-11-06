@@ -6,7 +6,6 @@ import { site } from './theme/data/site'
 import { rootwrightNight } from './theme/shiki-theme'
 import { withSynonyms } from './synonyms'
 
-// TODO: confirm the real docs domain before launch.
 const SITE = 'https://docs.rootwrightlms.com'
 
 /** Extra callouts on top of VitePress's built-in info / tip / warning / danger / details. */
