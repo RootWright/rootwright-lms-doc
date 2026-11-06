@@ -1,0 +1,6 @@
+# Open to search engines and AI crawlers so RootWright docs can be found and cited.
+User-agent: *
+Allow: /
+
+# Update to the real docs domain before launch.
+Sitemap: https://docs.rootwrightlms.com/sitemap.xml

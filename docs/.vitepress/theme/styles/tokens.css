@@ -1,0 +1,167 @@
+/* ------------------------------------------------------------------
+   RootWright brand tokens (taken from rootwrightlms.com) mapped onto
+   VitePress's theme variables. Change colours here, nowhere else.
+   ------------------------------------------------------------------ */
+
+:root {
+  /* Brand */
+  --rw-ink: #14231e;
+  --rw-root: #2e9865;
+  --rw-flat: #1e765b;
+  --rw-flat-hover: #16604a;
+  --rw-teal: #0d5450;
+  --rw-cream: #f6f3ec;
+  --rw-paper: #ede9df;
+  --rw-mint: #e7f3ec;
+  --rw-night: #0e1814;
+  --rw-deep: linear-gradient(150deg, #0f5e58 0%, #0d4743 40%, #14231e 100%);
+  --rw-hl: rgba(226, 177, 98, 0.45);
+
+  /* Meaning tints: background / ink */
+  --rw-free-bg: #e2f7ec;   --rw-free-fg: #0f6b45;
+  --rw-pro-bg: #f1ecff;    --rw-pro-fg: #4f31b5;
+  --rw-note-bg: #e5f2ff;   --rw-note-fg: #17599a;
+  --rw-beta-bg: #fff5d6;   --rw-beta-fg: #7a4f00;
+  --rw-danger-bg: #ffeae3; --rw-danger-fg: #a33a1c;
+
+  /* The "leaf" corner from the logo mark: big top-left, tight elsewhere */
+  --rw-r-plate: 40px 12px 12px 12px;
+  --rw-r-card: 24px 7px 7px 7px;
+  --rw-r-win: 16px 6px 6px 6px;
+  --rw-r-btn: 14px 4px 4px 4px;
+  --rw-r-chip: 10px 3px 3px 3px;
+  --rw-r-sm: 8px 3px 3px 3px;
+
+  --rw-hdr: rgba(255, 255, 255, 0.86);
+  --rw-raised: #ffffff;
+  --rw-sh: 0 1px 2px rgba(20, 35, 30, 0.05), 0 8px 24px -14px rgba(20, 35, 30, 0.22);
+  --rw-sh2: 0 2px 4px rgba(20, 35, 30, 0.04), 0 28px 60px -28px rgba(20, 35, 30, 0.4);
+  --rw-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --rw-font-display: 'Familjen Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+  /* VitePress mapping */
+  --vp-font-family-base: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --vp-font-family-mono: 'DM Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+
+  --vp-c-brand-1: var(--rw-flat);
+  --vp-c-brand-2: var(--rw-flat-hover);
+  --vp-c-brand-3: var(--rw-flat);
+  --vp-c-brand-soft: rgba(46, 152, 101, 0.14);
+
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: var(--rw-cream);
+  --vp-c-bg-soft: var(--rw-cream);
+  --vp-c-bg-elv: #ffffff;
+
+  --vp-c-text-1: var(--rw-ink);
+  --vp-c-text-2: #4e5c55;
+  --vp-c-text-3: #66756e;
+
+  --vp-c-divider: rgba(20, 35, 30, 0.11);
+  --vp-c-border: rgba(20, 35, 30, 0.2);
+  --vp-c-gutter: rgba(20, 35, 30, 0.06);
+
+  --vp-c-default-soft: rgba(20, 35, 30, 0.06);
+
+  --vp-c-tip-1: var(--rw-free-fg);   --vp-c-tip-soft: var(--rw-free-bg);
+  --vp-c-note-1: var(--rw-note-fg);  --vp-c-note-soft: var(--rw-note-bg);
+  --vp-c-warning-1: var(--rw-beta-fg); --vp-c-warning-soft: var(--rw-beta-bg);
+  --vp-c-danger-1: var(--rw-danger-fg); --vp-c-danger-soft: var(--rw-danger-bg);
+
+  --vp-button-brand-bg: var(--rw-flat);
+  --vp-button-brand-hover-bg: var(--rw-flat-hover);
+  --vp-button-brand-active-bg: var(--rw-flat-hover);
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-hover-text: #ffffff;
+
+  --vp-nav-height: 68px;
+  --vp-sidebar-width: 272px;
+  --vp-sidebar-bg-color: var(--vp-c-bg);
+  --vp-nav-bg-color: var(--rw-hdr);
+  --vp-local-nav-bg-color: var(--rw-hdr);
+
+  --vp-code-bg: var(--rw-mint);
+  --vp-code-color: var(--rw-free-fg);
+  --vp-code-block-bg: var(--rw-ink);
+  --vp-code-block-color: #f2efe7;
+  --vp-code-block-divider-color: rgba(246, 243, 236, 0.1);
+  --vp-code-tab-bg: var(--rw-ink);
+  --vp-code-tab-divider: rgba(246, 243, 236, 0.1);
+  --vp-code-tab-text-color: #93a79c;
+  --vp-code-tab-hover-text-color: #f2efe7;
+  --vp-code-tab-active-text-color: #f2efe7;
+  --vp-code-tab-active-bar-color: #4cb683;
+  --vp-code-line-highlight-color: rgba(127, 212, 169, 0.12);
+  --vp-code-copy-code-bg: rgba(246, 243, 236, 0.06);
+  --vp-code-copy-code-hover-bg: rgba(246, 243, 236, 0.12);
+  --vp-code-copy-code-border-color: rgba(246, 243, 236, 0.16);
+  --vp-code-copy-code-hover-border-color: rgba(246, 243, 236, 0.3);
+  --vp-code-copy-copied-text-content: 'Copied';
+  --vp-code-lang-color: #93a79c;
+
+  --vp-local-search-bg: var(--rw-cream);
+  --vp-local-search-result-bg: #ffffff;
+  --vp-local-search-result-border: rgba(20, 35, 30, 0.11);
+  --vp-local-search-result-selected-bg: var(--rw-mint);
+  --vp-local-search-result-selected-border: var(--rw-root);
+  --vp-local-search-highlight-bg: var(--rw-hl);
+  --vp-local-search-highlight-text: var(--rw-ink);
+
+  --vp-layout-top-height: 0px;
+}
+
+.dark {
+  --rw-hdr: rgba(14, 24, 20, 0.86);
+  --rw-raised: #15201b;
+  --rw-mint: #153027;
+  --rw-hl: rgba(226, 177, 98, 0.32);
+  --rw-free-bg: #12291f;   --rw-free-fg: #8ee3bc;
+  --rw-pro-bg: #221c38;    --rw-pro-fg: #cbb9ff;
+  --rw-note-bg: #142536;   --rw-note-fg: #a3d1ff;
+  --rw-beta-bg: #2c2616;   --rw-beta-fg: #ffd873;
+  --rw-danger-bg: #2e1d19; --rw-danger-fg: #ffb09b;
+  --rw-sh: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -14px rgba(0, 0, 0, 0.6);
+  --rw-sh2: 0 2px 4px rgba(0, 0, 0, 0.3), 0 28px 60px -28px rgba(0, 0, 0, 0.75);
+
+  --vp-c-brand-1: #7fd4a9;
+  --vp-c-brand-2: #63c796;
+  --vp-c-brand-3: #4cb683;
+  --vp-c-brand-soft: rgba(76, 182, 131, 0.16);
+
+  --vp-c-bg: var(--rw-night);
+  --vp-c-bg-alt: #121d18;
+  --vp-c-bg-soft: #18271f;
+  --vp-c-bg-elv: #15201b;
+
+  --vp-c-text-1: #f2efe7;
+  --vp-c-text-2: #b0c2b7;
+  --vp-c-text-3: #93a79c;
+
+  --vp-c-divider: rgba(246, 243, 236, 0.11);
+  --vp-c-border: rgba(246, 243, 236, 0.22);
+  --vp-c-gutter: rgba(0, 0, 0, 0.4);
+  --vp-c-default-soft: rgba(246, 243, 236, 0.06);
+
+  --vp-button-brand-bg: #4cb683;
+  --vp-button-brand-hover-bg: #63c796;
+  --vp-button-brand-active-bg: #63c796;
+  --vp-button-brand-text: var(--rw-night);
+  --vp-button-brand-hover-text: var(--rw-night);
+
+  --vp-code-bg: #153027;
+  --vp-code-color: #8ee3bc;
+  --vp-code-block-bg: #0a120f;
+  --vp-code-tab-bg: #0a120f;
+
+  --vp-local-search-bg: #121d18;
+  --vp-local-search-result-bg: #15201b;
+  --vp-local-search-result-border: rgba(246, 243, 236, 0.11);
+  --vp-local-search-result-selected-bg: #153027;
+  --vp-local-search-result-selected-border: #4cb683;
+  --vp-local-search-highlight-text: #f2efe7;
+}
+
+/* Announcement bar height (the class is set in <head> by config.ts, removed when dismissed) */
+html.rw-has-banner { --vp-layout-top-height: 40px; }
+html.rw-has-banner.rw-no-banner { --vp-layout-top-height: 0px; }

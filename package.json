@@ -1,0 +1,20 @@
+{
+  "name": "rootwright-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:stubs": "node scripts/make-stubs.mjs",
+    "icons:css": "node scripts/gen-icon-css.mjs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.14.0",
+    "markdown-it-container": "^4.0.0",
+    "@fontsource/familjen-grotesk": "^5.3.0",
+    "@fontsource/hanken-grotesk": "^5.3.0",
+    "@fontsource/dm-mono": "^5.3.0"
+  }
+}
