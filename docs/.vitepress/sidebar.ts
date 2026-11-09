@@ -41,6 +41,16 @@ export const sections: DocSection[] = [
     ]
   },
   {
+    text: 'Migration',
+    icon: 'download',
+    base: '/migration/',
+    collapsed: true,
+    items: [
+      { text: 'Migrate from another LMS', link: 'migrate-to-rootwright' },
+      { text: 'What gets migrated', link: 'what-gets-migrated' }
+    ]
+  },
+  {
     text: 'Courses',
     icon: 'layers',
     base: '/courses/',
