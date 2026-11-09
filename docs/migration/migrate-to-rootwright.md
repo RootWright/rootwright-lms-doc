@@ -99,8 +99,14 @@ Click the green button to start. It names the option and, if you picked courses,
 
 The run screen shows a progress bar, how many courses are done, and the stage it is on: **Course details**, **Lessons and quizzes**, **Students**, **Student progress**, **Quiz attempts and assignments**, **Reviews**, **Announcements** and **Recalculating progress** for each course, then **Orders and payments**, **WooCommerce and EDD orders** and **Instructors and applications** once at the end.
 
+While it runs, the title reads **Copy into RootWright LMS — in progress** with the line **You can close this tab. The migration keeps its place and resumes from here.** The status line names the stage and the course, for example **0% — 0 of 2 courses · Course details · TT Photography Basics**.
+
+![A paused migration at 0% with the Pause, Stop and Resume buttons under an empty log that reads Working…](/images/migration/migrate-06-paused-run.jpg)
+
+*A paused run. The title still says **in progress**; **Resume** is the button that tells you it is paused.*
+
 - **You can close the tab.** The migration saves its place after every record and carries on in the background through WP-Cron. Open **Settings → Migrate** again and it picks up where it is.
-- **Pause** stops it until you click **Resume**.
+- **Pause** stops it until you click **Resume**. A small site can finish before a pause lands.
 - **Stop** ends it early. Everything migrated so far is kept.
 - **No emails are sent.** Students are not welcomed again to courses they joined years ago, and migrated announcements arrive as drafts.
 
@@ -126,10 +132,18 @@ Then open a few migrated courses in **Teaching → Courses** and check them as a
 ::: steps
 1. Go to **Settings → Advanced → Migrate**.
 2. Click **Your last migration**, then **Undo this migration**.
-3. Confirm. Everything the migration created is removed, **including any enrollments or progress recorded in RootWright LMS since it ran**. Your original courses are not affected.
+3. Your browser asks **Undo this migration (Copy into RootWright LMS)?** Click **OK**. Everything the migration created is removed, **including any enrollments or progress recorded in RootWright LMS since it ran**. Your original courses are not affected.
 :::
 
+The title changes to **Copy into RootWright LMS — undone** and only **Migrate something else** is left. After you leave the screen, the **Your last migration** card is gone, because there is nothing left to undo.
+
+![A migration marked undone, with its counts and log still shown and only the Migrate something else button](/images/migration/migrate-07-undone.jpg)
+
 Undoing a **Complete migration** turns the converted courses back into your old LMS's courses. A running migration must be stopped first.
+
+::: warning Running the same LMS again takes over the earlier run
+A second migration from the same LMS updates the courses the first one created and becomes their owner. Undoing the second run then removes those courses too, not only what the second run added.
+:::
 
 ## Switch over to RootWright LMS
 
