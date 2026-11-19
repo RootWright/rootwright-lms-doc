@@ -52,7 +52,7 @@ body { -webkit-font-smoothing: antialiased; }
   .VPNavBarSearch #local-search { width: 100%; max-width: 360px; }
   .VPNavBarSearch .DocSearch-Button {
     width: 100%; max-width: 360px; height: 40px; padding: 0 8px 0 14px;
-    border: 1px solid var(--vp-c-border); border-radius: 12px 4px 4px 4px;
+    border: 1px solid var(--vp-c-border); border-radius: 8px;
     background: var(--vp-c-bg-alt);
     transition: border-color .15s, box-shadow .15s;
   }
@@ -241,16 +241,16 @@ body { -webkit-font-smoothing: antialiased; }
 .VPLocalSearchBox .backdrop { background: rgba(20, 35, 30, 0.42) !important; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
 .dark .VPLocalSearchBox .backdrop { background: rgba(0, 0, 0, 0.6) !important; }
 .VPLocalSearchBox .shell {
-  border-radius: 28px 10px 10px 10px !important; border: 1px solid var(--vp-c-divider);
+  border-radius: 14px !important; border: 1px solid var(--vp-c-divider);
   box-shadow: 0 2px 4px rgba(20,35,30,.04), 0 40px 80px -30px rgba(20,35,30,.5) !important; max-width: 760px !important; padding: 14px !important;
 }
 .VPLocalSearchBox .search-bar {
-  border-radius: 18px 6px 6px 6px !important; height: 56px; padding: 0 14px !important; background: var(--vp-c-bg) !important; border: 1.5px solid var(--vp-c-border) !important;
+  border-radius: 10px !important; height: 56px; padding: 0 14px !important; background: var(--vp-c-bg) !important; border: 1.5px solid var(--vp-c-border) !important;
 }
 .VPLocalSearchBox .search-bar:focus-within { border-color: var(--rw-root) !important; box-shadow: 0 0 0 4px var(--rw-free-bg); }
 .VPLocalSearchBox .search-input { font-size: 18px !important; }
 .VPLocalSearchBox .search-icon { color: var(--rw-root) !important; }
-.VPLocalSearchBox .result { border-radius: 14px 4px 4px 4px !important; }
+.VPLocalSearchBox .result { border-radius: 8px !important; }
 .VPLocalSearchBox .result .title-icon { color: var(--vp-c-brand-1) !important; font-family: var(--vp-font-family-mono); }
 .VPLocalSearchBox .result .title.main { font-weight: 700; }
 .VPLocalSearchBox .result.selected { border-color: var(--rw-root) !important; }

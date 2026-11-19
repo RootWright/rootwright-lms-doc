@@ -61,7 +61,7 @@ onMounted(apply)
 .rw-sbfilter { padding: 20px 0 8px; }
 .box {
   display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px 0 12px; color: var(--vp-c-text-3);
-  border: 1px solid var(--vp-c-divider); border-radius: 12px 4px 4px 4px; background: var(--vp-c-bg-alt); transition: border-color .15s, box-shadow .15s;
+  border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-alt); transition: border-color .15s, box-shadow .15s;
 }
 .box:focus-within { border-color: var(--rw-root); box-shadow: 0 0 0 4px var(--rw-free-bg); }
 input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; color: var(--vp-c-text-1); }
