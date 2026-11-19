@@ -26,8 +26,8 @@ async function send(helpful: boolean) {
   <section class="rw-feedback" aria-label="Page feedback">
     <div v-if="state === 'ask'" class="ask">
       <h2 class="q rw-display">Was this page helpful?</h2>
-      <button type="button" class="fb" @click="send(true)"><RwIcon name="up" :size="17" /> Yes</button>
-      <button type="button" class="fb" @click="state = 'no'"><RwIcon name="down" :size="17" /> Not really</button>
+      <button type="button" class="fb" @click="send(true)">Yes</button>
+      <button type="button" class="fb" @click="state = 'no'">Not really</button>
     </div>
 
     <form v-else-if="state === 'no'" class="no" @submit.prevent="send(false)">
@@ -53,12 +53,12 @@ async function send(helpful: boolean) {
 </template>
 
 <style scoped>
-.rw-feedback { margin: 56px 0 28px; padding: 24px; border-radius: var(--rw-r-card); background: var(--vp-c-bg-soft); border: 1px solid var(--vp-c-divider); }
+.rw-feedback { margin: 64px 0 24px; padding-top: 24px; border-top: 1px solid var(--vp-c-divider); }
 .ask { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.q { margin: 0; flex: 1; min-width: 200px; font-size: 20px; font-weight: 700; line-height: 1.3; border: 0; padding: 0; display: block; }
+.q { margin: 0; flex: 1; min-width: 200px; font-size: 16px; font-weight: 500; line-height: 1.4; border: 0; padding: 0; display: block; letter-spacing: -.01em; }
 .fb {
-  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; font-weight: 600; font-size: 15px;
-  border: 1px solid var(--vp-c-border); border-radius: var(--rw-r-btn); background: var(--vp-c-bg); color: var(--vp-c-text-1); transition: all .15s;
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; font-weight: 500; font-size: 14px;
+  border: 1px solid var(--vp-c-divider); border-radius: 999px; background: var(--vp-c-bg); color: var(--vp-c-text-2); transition: all .15s;
 }
 .fb:hover { border-color: var(--rw-root); color: var(--vp-c-brand-1); }
 .hint { margin: 4px 0 12px; font-size: 15px; color: var(--vp-c-text-2); }
@@ -68,12 +68,12 @@ textarea {
 }
 textarea:focus { outline: none; border-color: var(--rw-root); box-shadow: 0 0 0 4px var(--rw-free-bg); }
 .btns { display: flex; gap: 10px; margin-top: 12px; }
-.send { height: 44px; padding: 0 18px; border-radius: var(--rw-r-btn); background: var(--vp-button-brand-bg); color: var(--vp-button-brand-text); font-weight: 600; }
+.send { height: 38px; padding: 0 16px; border-radius: 8px; background: var(--vp-button-brand-bg); color: var(--vp-button-brand-text); font-weight: 600; }
 .send:hover { background: var(--vp-button-brand-hover-bg); }
-.cancel { height: 44px; padding: 0 16px; border-radius: var(--rw-r-btn); border: 1px solid var(--vp-c-divider); color: var(--vp-c-text-2); }
-.thanks { display: flex; align-items: center; gap: 12px; font-size: 17px; }
-.tick { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px 3px 3px 3px; background: var(--rw-root); color: #fff; }
-.links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--vp-c-divider); font-size: 14px; }
-.links a { display: inline-flex; align-items: center; gap: 6px; color: var(--vp-c-text-2); }
+.cancel { height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--vp-c-divider); color: var(--vp-c-text-2); }
+.thanks { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--vp-c-text-2); }
+.tick { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--rw-mint); color: var(--vp-c-brand-1); }
+.links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 14px; font-size: 13px; }
+.links a { display: inline-flex; align-items: center; gap: 6px; color: var(--vp-c-text-3); }
 .links a:hover { color: var(--vp-c-brand-1); }
 </style>

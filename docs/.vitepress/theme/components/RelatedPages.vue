@@ -16,14 +16,13 @@ const related = computed(() => {
 <template>
   <nav v-if="related.length" class="rw-related" aria-labelledby="rw-related-title">
     <div id="rw-related-title" class="title">Related</div>
-    <a v-for="l in related" :key="l.link" :href="withBase(l.link)">{{ l.text }}<span v-if="l.pro" class="rw-pill rw-pill-pro">Pro</span></a>
+    <a v-for="l in related" :key="l.link" :href="withBase(l.link)">{{ l.text }}</a>
   </nav>
 </template>
 
 <style scoped>
 .rw-related { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--vp-c-divider); display: flex; flex-direction: column; gap: 2px; }
-.title { font-family: var(--vp-font-family-mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: var(--vp-c-text-2); margin-bottom: 6px; }
+.title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--vp-c-text-3); margin-bottom: 6px; }
 a { font-size: 14px; line-height: 1.4; padding: 5px 0; color: var(--vp-c-text-2); transition: color .15s; }
 a:hover { color: var(--vp-c-brand-1); }
-.rw-pill { margin-left: 6px; }
 </style>
