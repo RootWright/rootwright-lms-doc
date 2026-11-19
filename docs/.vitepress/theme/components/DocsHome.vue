@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { withBase } from 'vitepress'
-import { hero, quickStart, roles, topicDesc, symptoms, learndash, helpBand } from '../data/home'
-import { sections } from '../../sidebar'
-import { releases } from '../data/changelog'
+import { hero, crumbs, topicDesc, popular } from '../data/home'
+import { sections, flatLinks } from '../../sidebar'
 import { site } from '../data/site'
 import { openSearch } from '../search'
 import RwIcon from './RwIcon.vue'
@@ -11,209 +10,103 @@ import SiteFooter from './SiteFooter.vue'
 
 const href = (l: string) => (l.startsWith('http') ? l : withBase(l))
 
-/* Quick start checklist (remembered in this browser) */
-const KEY = 'rw-quickstart'
-const done = ref<Record<string, boolean>>({})
-onMounted(() => {
-  try { done.value = JSON.parse(localStorage.getItem(KEY) || '{}') } catch {}
-})
-watch(done, (v) => { try { localStorage.setItem(KEY, JSON.stringify(v)) } catch {} }, { deep: true })
-const doneCount = computed(() => quickStart.steps.filter((s) => done.value[s.id]).length)
-const pct = computed(() => Math.round((doneCount.value / quickStart.steps.length) * 100))
-const toggle = (id: string) => (done.value = { ...done.value, [id]: !done.value[id] })
-
-/* Role tabs */
-const roleId = ref(roles[1].id)
-const role = computed(() => roles.find((r) => r.id === roleId.value)!)
-function onTabKey(e: KeyboardEvent, i: number) {
-  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
-  const n = roles.length
-  const next = (i + (e.key === 'ArrowRight' ? 1 : n - 1)) % n
-  roleId.value = roles[next].id
-  ;(document.getElementById(`rw-tab-${roles[next].id}`) as HTMLElement | null)?.focus()
-}
-
 /* Topic cards: one per sidebar section, so a new page shows up here without editing the home page */
 const topics = sections.map((s) => ({
-  icon: s.icon, title: s.text, desc: topicDesc[s.base] ?? '', link: s.base + s.items[0].link, count: s.items.length,
-  links: s.items.slice(0, 3).map((i) => [i.text, s.base + i.link, !!i.pro] as const)
+  icon: s.icon, title: s.text, desc: topicDesc[s.base] ?? '', count: s.items.length,
+  links: s.items.map((i) => ({ text: i.text, link: s.base + i.link }))
 }))
 
-/* What's new: first items across releases */
-const tagLabel = (t: string) => (t === 'Building' ? 'In progress' : t)
-const news = computed(() =>
-  releases.flatMap((r) => r.items.map((i) => ({ ...i, release: r.version }))).slice(0, 4)
+/* Inline filter, like the Library page. Empty query shows the first 4 links per card. */
+const q = ref('')
+const query = computed(() => q.value.trim().toLowerCase())
+const shown = computed(() =>
+  topics
+    .map((t) => {
+      const titleHit = !!query.value && t.title.toLowerCase().includes(query.value)
+      const links = !query.value ? t.links.slice(0, 4)
+        : titleHit ? t.links
+        : t.links.filter((l) => l.text.toLowerCase().includes(query.value))
+      return { ...t, links }
+    })
+    .filter((t) => t.links.length)
 )
+function parts(text: string) {
+  const i = query.value ? text.toLowerCase().indexOf(query.value) : -1
+  return i < 0 ? [text, '', ''] : [text.slice(0, i), text.slice(i, i + query.value.length), text.slice(i + query.value.length)]
+}
 
-const isMac = ref(true)
-onMounted(() => { isMac.value = /Mac|iPhone|iPad/.test(navigator.platform) })
+const popularRows = popular.map((p) => ({ ...p, section: flatLinks.find((l) => l.link === p.link)?.section ?? '' }))
+
+const input = ref<HTMLInputElement>()
+function onKey(e: KeyboardEvent) {
+  const t = e.target as HTMLElement
+  if (e.key === '/' && !/INPUT|TEXTAREA/.test(t.tagName) && !t.isContentEditable) { e.preventDefault(); input.value?.focus() }
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <template>
   <div class="rw-home">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <a class="kicker" :href="href(hero.kickerLink)"><span class="dot" />{{ hero.kicker }} <RwIcon name="arrowR" :size="14" :stroke="2" /></a>
-          <h1 class="rw-display title">
-            {{ hero.titleBefore }} <span class="mark">{{ hero.titleMark }}</span> {{ hero.titleAfter }}
-          </h1>
-          <p class="lead">{{ hero.lead }}</p>
-          <button type="button" class="bigsearch" @click="openSearch('')">
-            <RwIcon name="search" :size="22" :stroke="1.9" />
-            <span>{{ hero.searchHint }}</span>
-            <kbd>{{ isMac ? '⌘' : 'Ctrl' }} K</kbd>
-          </button>
-          <div class="popular">
-            <span>Popular:</span>
-            <button v-for="p in hero.popular" :key="p.text" type="button" class="chip" @click="openSearch(p.query)">{{ p.text }}</button>
-          </div>
-        </div>
-
-        <div class="qs">
-          <div class="qs-head">
-            <div>
-              <div class="eyebrow">Quick start</div>
-              <div class="rw-display qs-title">{{ quickStart.title }}</div>
-            </div>
-            <div class="qs-count" aria-live="polite">{{ doneCount }} of {{ quickStart.steps.length }} done</div>
-          </div>
-          <div class="bar" role="progressbar" :aria-valuenow="pct" aria-valuemin="0" aria-valuemax="100" aria-label="Quick start progress"><div :style="{ width: pct + '%' }" /></div>
-          <ul class="steps">
-            <li v-for="s in quickStart.steps" :key="s.id" class="step" :class="{ done: done[s.id] }">
-              <button type="button" class="ck" :aria-pressed="!!done[s.id]" :aria-label="`Mark “${s.title}” as ${done[s.id] ? 'not done' : 'done'}`" @click="toggle(s.id)">
-                <RwIcon name="check" :size="14" :stroke="3" />
-              </button>
-              <a :href="href(s.link)" class="st">
-                <span class="st-t">{{ s.title }}</span>
-                <span class="st-d">{{ s.desc }}</span>
-              </a>
-              <span class="time">{{ s.time }}</span>
-            </li>
-          </ul>
-          <a class="more" :href="href(quickStart.link)">Open the full quick start guide <RwIcon name="arrowR" :size="16" :stroke="2" /></a>
+    <section class="page-hero">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <template v-for="c in crumbs" :key="c.text">
+            <a v-if="c.link" :href="c.link">{{ c.text }}</a><span v-else>{{ c.text }}</span>
+            <RwIcon name="chevR" :size="12" :stroke="2" />
+          </template>
+          <span aria-current="page">Docs</span>
+        </nav>
+        <h1>{{ hero.titleBefore }} <span class="accent">{{ hero.titleAccent }}</span></h1>
+        <p class="lead">{{ hero.lead }}</p>
+        <div class="search">
+          <label for="rw-doc-q" class="sr">Search the docs</label>
+          <RwIcon name="search" :size="20" />
+          <input id="rw-doc-q" ref="input" v-model="q" type="search" :placeholder="hero.searchHint" autocomplete="off" @keydown.enter="openSearch(q)" />
+          <kbd>/</kbd>
         </div>
       </div>
     </section>
 
-    <!-- Paths by role -->
-    <section class="wrap sec">
-      <div class="sec-head">
-        <div>
-          <div class="eyebrow green">Start where you are</div>
-          <h2 class="rw-display h2">What are you here to do?</h2>
+    <section class="band first">
+      <div class="wrap">
+        <div class="dgrid">
+          <div v-for="t in shown" :key="t.title" class="dcard">
+            <div class="top"><span class="ico-s"><RwIcon :name="t.icon" :size="18" /></span><span class="count">{{ t.count }} {{ t.count === 1 ? 'guide' : 'guides' }}</span></div>
+            <h3><a :href="href(t.links[0].link)">{{ t.title }}</a></h3>
+            <p>{{ t.desc }}</p>
+            <ul>
+              <li v-for="l in t.links" :key="l.link">
+                <a :href="href(l.link)">
+                  <span>{{ parts(l.text)[0] }}<mark v-if="parts(l.text)[1]">{{ parts(l.text)[1] }}</mark>{{ parts(l.text)[2] }}</span>                  <RwIcon name="arrowR" :size="14" :stroke="2" />
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="tabs" role="tablist" aria-label="Choose your role">
-          <button
-            v-for="(r, i) in roles" :id="`rw-tab-${r.id}`" :key="r.id" type="button" role="tab" class="tab"
-            :class="{ on: r.id === roleId }" :aria-selected="r.id === roleId" :tabindex="r.id === roleId ? 0 : -1"
-            aria-controls="rw-role-panel" @click="roleId = r.id" @keydown="onTabKey($event, i)"
-          ><RwIcon :name="r.icon" :size="17" />{{ r.label }}</button>
+        <div v-if="query" class="more-search">
+          <p v-if="!shown.length">No guide titles match “{{ q.trim() }}”.</p>
+          <button type="button" class="link" @click="openSearch(q)">Search the full text of every page for “{{ q.trim() }}” <RwIcon name="arrowR" :size="15" :stroke="2" /></button>
         </div>
       </div>
-      <div id="rw-role-panel" class="role-grid" role="tabpanel" :aria-labelledby="`rw-tab-${roleId}`">
-        <div class="role-card">
-          <div class="eyebrow mintink">{{ role.kicker }}</div>
-          <div class="rw-display role-title">{{ role.title }}</div>
-          <p>{{ role.desc }}</p>
-          <a class="role-cta" :href="href(role.cta.link)">{{ role.cta.text }} <RwIcon name="arrowR" :size="16" :stroke="2.2" /></a>
-        </div>
-        <div class="role-links">
-          <a v-for="l in role.links" :key="l.link" class="card rlink" :href="href(l.link)">
-            <span class="rlink-top">
-              <span class="ico"><RwIcon name="file" :size="17" /></span>
-              <span v-if="l.pro" class="pill pro">Pro</span>
-            </span>
-            <span class="rlink-t">{{ l.title }}</span>
-            <span class="rlink-d">{{ l.desc }}</span>
+    </section>
+
+    <section class="band soft">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Popular</span><h2>Most-read guides</h2></div>
+        <div class="popular">
+          <a v-for="p in popularRows" :key="p.link" :href="href(p.link)">
+            <span class="ico-s"><RwIcon name="file" :size="18" /></span>{{ p.text }}<small>{{ p.section }}</small>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Topics -->
-    <section class="wrap sec">
-      <div class="sec-head">
-        <div>
-          <div class="eyebrow green">Browse the docs</div>
-          <h2 class="rw-display h2">Every part of RootWright</h2>
-        </div>
-        <div class="legend">
-          <span><span class="pill free">Free</span> in every install</span>
-          <span><span class="pill pro">Pro</span> needs a Pro license</span>
-        </div>
-      </div>
-      <div class="topics">
-        <div v-for="t in topics" :key="t.title" class="card topic">
-          <span class="ttop"><span class="tico"><RwIcon :name="t.icon" :size="21" /></span><span class="tcount">{{ t.count }} {{ t.count === 1 ? 'page' : 'pages' }}</span></span>
-          <a class="rw-display ttl" :href="href(t.link)">{{ t.title }}</a>
-          <p>{{ t.desc }}</p>
-          <ul>
-            <li v-for="[text, link, pro] in t.links" :key="link">
-              <a :href="href(link)"><span>{{ text }}</span><span v-if="pro" class="pill pro sm">Pro</span><RwIcon class="arr" name="chevR" :size="15" :stroke="2" /></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- Fix by symptom -->
-    <section class="wrap sec">
-      <div class="sec-head">
-        <div>
-          <div class="eyebrow green">Fix a problem</div>
-          <h2 class="rw-display h2">Something not working?</h2>
-        </div>
-        <a class="more" :href="withBase('/help/troubleshooting')">All fixes <RwIcon name="arrowR" :size="16" :stroke="2" /></a>
-      </div>
-      <div class="symptoms">
-        <a v-for="s in symptoms" :key="s.link" class="card sym" :href="href(s.link)">
-          <span class="sym-ico"><RwIcon name="alert" :size="17" /></span>
-          <span class="sym-t">{{ s.text }}</span>
-          <RwIcon class="arr" name="arrowR" :size="16" :stroke="2" />
-        </a>
-      </div>
-    </section>
-
-    <!-- What's new + LearnDash -->
-    <section class="wrap sec two">
-      <div class="panel">
-        <div class="panel-head">
-          <h2 class="rw-display h3"><RwIcon name="history" :size="22" /> What’s new</h2>
-          <a :href="withBase('/changelog')">Full changelog →</a>
-        </div>
-        <a v-for="n in news" :key="n.title" class="news" :href="n.link ? href(n.link) : withBase('/changelog')">
-          <span><span class="tag" :class="n.tag.toLowerCase()">{{ tagLabel(n.tag) }}</span></span>
-          <span>
-            <span class="news-t">{{ n.title }} <span v-if="n.pro" class="pill pro sm">Pro</span></span>
-            <span class="news-d">{{ n.desc }}</span>
-          </span>
-        </a>
-      </div>
-      <div class="panel mint">
-        <h2 class="rw-display h3">{{ learndash.title }}</h2>
-        <p class="ld-text">{{ learndash.text }}</p>
-        <div class="ld-links">
-          <a v-for="l in learndash.links" :key="l.text" class="card ld" :href="href(l.link)">
-            <RwIcon :name="l.icon" :size="18" /><span>{{ l.text }}</span><RwIcon class="arr" name="arrowR" :size="16" :stroke="2" />
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Help band -->
-    <section class="wrap sec last">
-      <div class="band">
-        <div>
-          <h2 class="rw-display band-t">{{ helpBand.title }} <span>{{ helpBand.accent }}</span></h2>
-          <p>{{ helpBand.text }}</p>
-        </div>
-        <div class="band-links">
-          <a v-if="site.help.community" class="card bl" :href="site.help.community"><RwIcon name="users" :size="22" /><b>Ask the community</b><span>Questions, ideas and show-and-tell from other course builders.</span></a>
-          <a v-if="site.help.support" class="card bl" :href="site.help.support"><RwIcon name="buoy" :size="22" /><b>Contact support</b><span>Talk to the team that builds RootWright.</span></a>
-          <a v-if="site.help.bugs" class="card bl" :href="site.help.bugs"><RwIcon name="bug" :size="22" /><b>Report a bug</b><span>Beta testers: include your version and steps to reproduce.</span></a>
-        </div>
+    <section class="band">
+      <div class="wrap help-row">
+        <div v-if="site.help.community" class="help-card"><span class="ico-s"><RwIcon name="users" :size="18" /></span><h3>Community forum</h3><p>Ask questions and share tips with other course creators.</p><a class="link" :href="site.help.community">Join the forum <RwIcon name="arrowR" :size="15" :stroke="2" /></a></div>
+        <div v-if="site.help.bugs" class="help-card"><span class="ico-s"><RwIcon name="bug" :size="18" /></span><h3>Report a bug</h3><p>We’re in beta. Include your version and the steps to reproduce.</p><a class="link" :href="site.help.bugs">Report a bug <RwIcon name="arrowR" :size="15" :stroke="2" /></a></div>
+        <div v-if="site.help.support" class="help-card dk"><span class="ico-s"><RwIcon name="buoy" :size="18" /></span><h3>Talk to the team</h3><p>Still stuck? Send us a message and a person will reply.</p><a class="link" :href="site.help.support">Contact support <RwIcon name="arrowR" :size="15" :stroke="2" /></a></div>
       </div>
     </section>
 
@@ -222,173 +115,100 @@ onMounted(() => { isMac.value = /Mac|iPhone|iPad/.test(navigator.platform) })
 </template>
 
 <style scoped>
-.rw-home { --wrap: 1280px; }
-.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: 24px; padding-right: 24px; }
-@media (min-width: 768px) { .wrap { padding-left: 48px; padding-right: 48px; } }
-a { color: inherit; }
-.eyebrow { font-family: var(--vp-font-family-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--vp-c-text-2); }
-.eyebrow.green { color: var(--vp-c-brand-1); font-size: 13px; }
-.eyebrow.mintink { color: #7fd4a9; }
-.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: var(--rw-r-sm); line-height: 1.5; }
-.pill.sm { font-size: 11px; padding: 1px 7px; }
-.pill.free { background: var(--rw-free-bg); color: var(--rw-free-fg); }
-.pill.pro { background: var(--rw-pro-bg); color: var(--rw-pro-fg); }
-.card { transition: transform .22s var(--rw-ease), box-shadow .22s, border-color .22s; }
-.card:hover { transform: translateY(-3px); box-shadow: var(--rw-sh2); border-color: var(--vp-c-border) !important; }
-
-/* Hero */
-.hero { background: var(--vp-c-bg-alt); border-bottom: 1px solid var(--vp-c-divider); }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: 64px; align-items: center; padding-top: 80px; padding-bottom: 88px; }
-.kicker {
-  display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 10px; border: 1px solid var(--vp-c-divider);
-  border-radius: 999px; background: var(--rw-raised); color: var(--vp-c-brand-1); font-size: 14px; font-weight: 600; transition: border-color .15s;
+/* Library look from the RootWright marketing site: Manrope titles, DM Sans text, mint and deep-green surfaces. */
+.rw-home {
+  --green: #1e765b; --green-2: #178164; --chip: #e9f8f2; --mint: #96ffd4; --mint-bg: #f5fffb; --mint-line: #dbfbee;
+  --ink: #18162b; --body: #6f6b7e; --muted: #85808f; --line: #e7e4ee; --line-2: #f1f0f4;
+  --paper: #fafffd; --bg: #ffffff; --deep: #09251f; --deep-sub: #aba7b9; --hl: #fff1b8; --shadow: rgba(9, 37, 31, .25);
+  --glow: rgba(150, 255, 212, .22);
+  --f-title: 'Manrope', var(--rw-font-display);
+  --f-body: 'DM Sans', var(--vp-font-family-base);
+  font-family: var(--f-body); color: var(--ink); background: var(--bg);
 }
-.kicker:hover { border-color: var(--rw-root); }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rw-root); }
-.title { margin: 22px 0 18px; font-size: clamp(42px, 5vw, 64px); line-height: 1.02; font-weight: 700; }
-.mark { background: linear-gradient(180deg, transparent 60%, var(--rw-hl) 60%); padding: 0 .06em; }
-.lead { margin: 0 0 32px; max-width: 560px; font-size: 19px; line-height: 1.55; color: var(--vp-c-text-2); }
-.bigsearch {
-  display: flex; align-items: center; gap: 14px; width: 100%; max-width: 600px; height: 62px; padding: 0 12px 0 20px;
-  border: 1.5px solid var(--vp-c-border); border-radius: 20px 6px 6px 6px; background: var(--rw-raised); box-shadow: var(--rw-sh);
-  color: var(--vp-c-text-2); font-size: 17px; text-align: left; transition: border-color .15s, box-shadow .15s;
+:global(.dark .rw-home) {
+  --green: #5fd3a5; --green-2: #7fe0b8; --chip: #143a2f; --mint-bg: #0f231d; --mint-line: #1f4a3b;
+  --ink: #eef5f1; --body: #a7b3ad; --muted: #8b968f; --line: #22352e; --line-2: #1b2c26;
+  --paper: #0e1a16; --bg: var(--vp-c-bg); --deep: #06140f; --deep-sub: #9fb0a8; --hl: #5a4a12; --shadow: rgba(0, 0, 0, .5);
+  --glow: rgba(150, 255, 212, .07);
 }
-.bigsearch:hover { border-color: var(--rw-root); box-shadow: 0 0 0 4px var(--rw-free-bg), var(--rw-sh); }
-.bigsearch span { flex: 1; }
-.bigsearch kbd, .qs kbd {
-  font-family: var(--vp-font-family-mono); font-size: 13px; padding: 3px 9px; border: 1px solid var(--vp-c-border);
-  border-bottom-width: 2px; border-radius: 7px; background: var(--vp-c-bg-alt);
-}
-.popular { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-size: 14px; color: var(--vp-c-text-2); }
-.chip {
-  padding: 5px 12px; border: 1px solid var(--vp-c-divider); border-radius: var(--rw-r-chip); background: var(--rw-raised);
-  color: var(--vp-c-text-1); font-size: 14px; transition: border-color .15s, color .15s;
-}
-.chip:hover { border-color: var(--rw-root); color: var(--vp-c-brand-1); }
+.wrap { max-width: 1208px; margin: 0 auto; padding: 0 24px; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { font-family: var(--f-title); font-weight: 400; letter-spacing: -.035em; text-wrap: balance; color: var(--ink); border: 0; margin: 0; padding: 0; }
+.sr { position: absolute; left: -9999px; }
+.accent { color: var(--green); }
+.eyebrow { font: 700 12px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+.ico-s { width: 36px; height: 36px; border-radius: 8px; background: var(--chip); display: grid; place-items: center; color: var(--green); flex: none; }
+.link { display: inline-flex; align-items: center; gap: 7px; font: 700 14px/1.4 var(--f-body); color: var(--green); }
+.link :deep(svg) { transition: transform .15s; }
+.link:hover :deep(svg) { transform: translateX(3px); }
 
-.qs { background: var(--rw-raised); border: 1px solid var(--vp-c-divider); border-radius: 28px 10px 10px 10px; box-shadow: var(--rw-sh2); padding: 26px; }
-.qs-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.qs-title { font-size: 24px; font-weight: 700; margin-top: 2px; }
-.qs-count { font-size: 14px; font-weight: 600; color: var(--vp-c-brand-1); white-space: nowrap; }
-.bar { height: 6px; border-radius: 6px; background: var(--vp-c-bg-soft); margin: 16px 0 18px; overflow: hidden; }
-.bar > div { height: 100%; border-radius: 6px; background: var(--rw-root); transition: width .35s var(--rw-ease); }
-.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.step { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border: 1px solid var(--vp-c-divider); border-radius: var(--rw-r-win); background: var(--vp-c-bg); transition: border-color .15s; }
-.step:hover { border-color: var(--vp-c-border); }
-.ck {
-  flex-shrink: 0; width: 24px; height: 24px; margin-top: 1px; display: grid; place-items: center;
-  border: 1.5px solid var(--vp-c-border); border-radius: var(--rw-r-sm); color: transparent; transition: all .15s;
-}
-.ck:hover { border-color: var(--rw-root); }
-.step.done .ck { background: var(--rw-root); border-color: var(--rw-root); color: #fff; }
-.st { flex: 1; min-width: 0; }
-.st-t { display: block; font-weight: 600; font-size: 16px; }
-.st:hover .st-t { color: var(--vp-c-brand-1); }
-.step.done .st-t { text-decoration: line-through; color: var(--vp-c-text-2); }
-.st-d { display: block; font-size: 14px; color: var(--vp-c-text-2); line-height: 1.45; }
-.time { flex-shrink: 0; font-family: var(--vp-font-family-mono); font-size: 12px; color: var(--vp-c-text-2); margin-top: 3px; }
-.more { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; font-weight: 600; font-size: 15px; color: var(--vp-c-brand-1); }
-.more:hover :deep(svg) { transform: translateX(3px); }
-.more :deep(svg) { transition: transform .15s; }
+/* hero */
+.page-hero { background: linear-gradient(180deg, var(--paper) 0%, var(--bg) 100%); padding: 72px 0 64px; position: relative; overflow: hidden; border-bottom: 1px solid var(--line-2); text-align: center; }
+.page-hero::before { content: ""; position: absolute; left: 50%; top: -80px; width: 900px; max-width: 100%; height: 460px; transform: translateX(-50%); background: radial-gradient(closest-side, var(--glow), transparent); pointer-events: none; }
+.page-hero .wrap { position: relative; }
+.crumbs { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; font: 500 12px var(--f-body); color: var(--muted); }
+.crumbs a:hover { color: var(--green); }
+.page-hero h1 { font-size: 56px; line-height: 1.1; margin: 16px auto 0; max-width: 860px; }
+.lead { font-size: 18px; line-height: 1.6; color: var(--body); max-width: 640px; margin: 20px auto 0; }
+.search { position: relative; max-width: 560px; margin: 32px auto 0; }
+.search > :deep(svg) { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.search input { width: 100%; height: 56px; border: 1px solid var(--line); border-radius: 12px; padding: 0 48px; font: 400 16px var(--f-body); color: var(--ink); background: var(--bg); box-shadow: 0 10px 30px -18px var(--shadow); }
+.search input:focus { outline: 2px solid var(--green); outline-offset: 1px; border-color: transparent; }
+.search kbd { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font: 600 12px var(--f-body); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; }
 
-/* Sections */
-.sec { padding-top: 88px; }
-.sec.last { padding-bottom: 96px; }
-.sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
-.h2 { margin: 6px 0 0; font-size: clamp(30px, 3.4vw, 40px); line-height: 1.1; font-weight: 700; }
-.h3 { margin: 0; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+/* bands */
+.band { padding: 96px 0; }
+.band.first { padding-top: 64px; }
+.band.soft { background: var(--paper); }
+.sec-head { margin-bottom: 40px; }
+.sec-head h2 { font-size: 48px; line-height: 1.15; margin-top: 14px; }
 
-.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.tab {
-  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 1px solid var(--vp-c-divider);
-  border-radius: var(--rw-r-btn); background: var(--rw-raised); color: var(--vp-c-text-2); font-size: 15px; font-weight: 600; transition: all .15s;
-}
-.tab:hover { border-color: var(--vp-c-border); color: var(--vp-c-text-1); }
-.tab.on { background: var(--vp-c-text-1); border-color: var(--vp-c-text-1); color: var(--vp-c-bg); }
+/* topic cards */
+.dgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.dcard { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.dcard .top { display: flex; justify-content: space-between; align-items: center; }
+.count { font: 500 12px var(--f-body); color: var(--muted); }
+.dcard h3 { font-size: 24px; line-height: 1.3; margin-top: 8px; }
+.dcard h3 a:hover { color: var(--green); }
+.dcard > p { font-size: 14px; line-height: 1.6; color: var(--body); margin: 0; }
+.dcard ul { list-style: none; margin: 4px 0 0; padding: 0; border-top: 1px solid var(--line-2); }
+.dcard li { margin: 0; }
+.dcard li a { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--body); padding: 10px 0; border-bottom: 1px dashed var(--line); transition: color .15s; }
+.dcard li a > span:first-child { flex: 1; }
+.dcard li:last-child a { border-bottom: 0; }
+.dcard li a:hover { color: var(--green); }
+.dcard li a :deep(svg) { color: var(--muted); flex: none; }
+.dcard mark { background: var(--hl); color: inherit; border-radius: 2px; }
+.more-search { text-align: center; margin-top: 32px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 10px; align-items: center; }
 
-.role-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.6fr); gap: 20px; }
-.role-card { display: flex; flex-direction: column; min-height: 300px; padding: 32px; border-radius: 28px 10px 10px 10px; background: var(--rw-deep); color: #f2efe7; }
-.role-title { font-size: 30px; line-height: 1.15; font-weight: 700; margin-top: 10px; }
-.role-card p { margin: 12px 0 24px; color: #d3ded7; }
-.role-cta {
-  margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px;
-  border-radius: var(--rw-r-btn); background: #4cb683; color: #0e1814 !important; font-weight: 700; transition: background-color .15s;
-}
-.role-cta:hover { background: #63c796; }
-.role-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.rlink { display: flex; flex-direction: column; gap: 6px; padding: 22px; border: 1px solid var(--vp-c-divider); border-radius: 20px 6px 6px 6px; background: var(--rw-raised); }
-.rlink-top { display: flex; align-items: center; justify-content: space-between; }
-.ico { width: 34px; height: 34px; display: grid; place-items: center; border-radius: var(--rw-r-chip); background: var(--rw-mint); color: var(--vp-c-brand-1); }
-.rlink-t { font-weight: 700; font-size: 17px; margin-top: 6px; }
-.rlink:hover .rlink-t { color: var(--vp-c-brand-1); }
-.rlink-d { font-size: 15px; color: var(--vp-c-text-2); line-height: 1.5; }
+/* popular */
+.popular { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.popular a { display: flex; align-items: center; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--line-2); font: 500 16px var(--f-body); color: var(--ink); }
+.popular a:hover { color: var(--green); }
+.popular small { margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
 
-.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; color: var(--vp-c-text-2); }
-.legend > span { display: inline-flex; align-items: center; gap: 6px; }
-.topics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.topic { display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--vp-c-divider); border-radius: var(--rw-r-card); background: var(--rw-raised); }
-.ttop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.tico { width: 44px; height: 44px; display: grid; place-items: center; border-radius: var(--rw-r-btn); background: var(--vp-c-text-1); color: var(--vp-c-bg); }
-.tcount { font-family: var(--vp-font-family-mono); font-size: 12px; color: var(--vp-c-text-3); }
+/* help */
+.help-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.help-card { border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 10px; background: var(--mint-bg); border: 1px solid var(--mint-line); }
+.help-card h3 { font-size: 24px; line-height: 1.3; }
+.help-card p { font-size: 14px; line-height: 1.6; color: var(--body); flex: 1; margin: 0; }
+.help-card.dk { background: var(--deep); border-color: var(--deep); }
+.help-card.dk h3 { color: #fff; }
+.help-card.dk p { color: var(--deep-sub); }
+.help-card.dk .link { color: var(--mint); }
+.help-card.dk .ico-s { background: rgba(150, 255, 212, .12); color: var(--mint); }
 
-.symptoms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.sym { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid var(--vp-c-divider); border-radius: var(--rw-r-win); background: var(--rw-raised); }
-.sym-ico { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border-radius: var(--rw-r-chip); background: var(--rw-danger-bg); color: var(--rw-danger-fg); }
-.sym-t { flex: 1; font-weight: 600; }
-.sym:hover .sym-t { color: var(--vp-c-brand-1); }
-.ttl { margin-top: 18px; font-size: 21px; font-weight: 700; transition: color .15s; }
-.ttl:hover { color: var(--vp-c-brand-1); }
-.topic p { margin: 6px 0 16px; font-size: 15px; color: var(--vp-c-text-2); line-height: 1.5; }
-.topic ul { list-style: none; margin: auto 0 0; padding: 0; border-top: 1px solid var(--vp-c-divider); }
-.topic li a { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--vp-c-divider); font-size: 15px; color: var(--vp-c-text-2); transition: color .15s; }
-.topic li a > span:first-child { flex: 1; }
-.topic li a:hover { color: var(--vp-c-brand-1); }
-.arr { transition: transform .15s; }
-a:hover > .arr { transform: translateX(3px); }
-
-.two { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; }
-.panel { padding: 30px; border: 1px solid var(--vp-c-divider); border-radius: 28px 10px 10px 10px; background: var(--rw-raised); }
-.panel.mint { background: var(--rw-mint); border-color: transparent; }
-.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.panel-head a { font-weight: 600; font-size: 15px; color: var(--vp-c-brand-1); }
-.news { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; padding: 16px 12px; margin: 0 -12px; border-radius: var(--rw-r-btn); transition: background-color .15s; }
-.news:hover { background: var(--vp-c-bg-soft); }
-.news-t { display: block; font-weight: 700; }
-.news-d { display: block; font-size: 15px; color: var(--vp-c-text-2); line-height: 1.5; }
-.tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: var(--rw-r-sm); }
-.tag.new { background: var(--rw-free-bg); color: var(--rw-free-fg); }
-.tag.improved { background: var(--rw-note-bg); color: var(--rw-note-fg); }
-.tag.fixed { background: var(--rw-danger-bg); color: var(--rw-danger-fg); }
-.tag.building { background: var(--rw-beta-bg); color: var(--rw-beta-fg); }
-.ld-text { margin: 8px 0 20px; color: var(--vp-c-text-1); }
-.ld-links { display: flex; flex-direction: column; gap: 10px; }
-.ld { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--vp-c-divider); border-radius: var(--rw-r-win); background: var(--rw-raised); font-weight: 600; }
-.ld span { flex: 1; }
-
-.band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 40px; align-items: center; padding: 48px; border-radius: 40px 14px 14px 14px; background: var(--rw-deep); color: #f2efe7; }
-.band-t { margin: 0; font-size: clamp(30px, 3.4vw, 40px); line-height: 1.08; font-weight: 700; }
-.band-t span { color: #7fd4a9; }
-.band p { margin: 14px 0 0; color: #d3ded7; font-size: 17px; }
-.band-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.bl { display: flex; flex-direction: column; gap: 8px; padding: 22px; border: 1px solid rgba(246, 243, 236, .14); border-radius: 20px 6px 6px 6px; background: rgba(246, 243, 236, .06); color: #f2efe7 !important; }
-.bl :deep(svg) { color: #7fd4a9; }
-.bl b { font-size: 17px; }
-.bl span { font-size: 14px; color: #b9c9bf; }
-.bl:hover { border-color: rgba(246, 243, 236, .3) !important; }
-
-@media (max-width: 1100px) {
-  .topics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .band { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 860px) {
-  .hero-grid, .role-grid, .two { grid-template-columns: minmax(0, 1fr); }
-  .hero-grid { padding-top: 48px; padding-bottom: 56px; gap: 40px; }
-  .sec { padding-top: 64px; }
+@media (max-width: 1100px) { .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .page-hero { padding: 56px 0 48px; }
+  .page-hero h1 { font-size: 40px; }
+  .sec-head h2 { font-size: 34px; }
+  .band { padding: 72px 0; }
+  .help-row, .popular { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
-  .topics, .role-links, .band-links, .symptoms { grid-template-columns: minmax(0, 1fr); }
-  .band { padding: 28px; }
-  .news { grid-template-columns: minmax(0, 1fr); gap: 6px; }
-  .bigsearch kbd { display: none; }
+  .wrap { padding: 0 16px; }
+  .dgrid { grid-template-columns: 1fr; }
+  .search kbd { display: none; }
 }
 </style>

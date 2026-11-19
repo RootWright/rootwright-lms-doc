@@ -39,6 +39,8 @@
   --rw-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   --rw-font-display: 'Familjen Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  /* Article headings. Manrope is the rootwrightlms.com title face; Familjen Grotesk is the fallback until it is installed. */
+  --rw-font-title: 'Manrope', 'Familjen Grotesk', 'Helvetica Neue', Arial, sans-serif;
 
   /* VitePress mapping */
   --vp-font-family-base: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;

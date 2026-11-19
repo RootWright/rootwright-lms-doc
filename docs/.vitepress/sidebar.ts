@@ -235,10 +235,10 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 /** VitePress sidebar config built from `sections`. */
 export function buildSidebar() {
   return sections.map((s) => ({
-    text: `<span class="rw-gi rw-i-${s.icon}" aria-hidden="true"></span>${esc(s.text)}`,
+    text: esc(s.text),
     collapsed: s.collapsed ?? false,
     items: s.items.map((i) => ({
-      text: esc(i.text) + (i.pro ? '<span class="rw-pill rw-pill-pro">Pro</span>' : ''),
+      text: esc(i.text),
       link: s.base + i.link
     }))
   }))
