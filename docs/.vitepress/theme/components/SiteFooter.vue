@@ -35,16 +35,16 @@ const href = (l: string) => (l.startsWith('http') ? l : withBase(l))
 </template>
 
 <style scoped>
-.rw-footer { border-top: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-alt); }
+.rw-footer { background: #09251f; color: #cacfd8; }
 .inner { max-width: 1280px; margin: 0 auto; padding: 56px 24px 28px; display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 32px; }
-.logo { display: flex; align-items: center; gap: 10px; color: var(--vp-c-text-1); font-weight: 700; font-size: 18px; }
-.lms { font-weight: 500; color: var(--vp-c-text-2); }
-.brand p { margin: 14px 0 0; max-width: 300px; color: var(--vp-c-text-2); font-size: 15px; }
+.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 18px; }
+.lms { font-weight: 500; color: #fff; }
+.brand p { margin: 14px 0 0; max-width: 300px; color: #cacfd8; font-size: 15px; }
 .col { display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
-.h { font-weight: 700; margin-bottom: 4px; }
-.col a { color: var(--vp-c-text-2); transition: color .15s; }
-.col a:hover { color: var(--vp-c-brand-1); }
-.bottom { max-width: 1280px; margin: 0 auto; padding: 18px 24px 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--vp-c-text-2); border-top: 1px solid var(--vp-c-divider); }
+.h { font-weight: 700; color: #fff; margin-bottom: 4px; }
+.col a { color: #cacfd8; transition: color .15s; }
+.col a:hover { color: #fff; }
+.bottom { max-width: 1280px; margin: 0 auto; padding: 18px 24px 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: #9ca3af; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .bottom a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 @media (min-width: 768px) { .inner, .bottom { padding-left: 48px; padding-right: 48px; } }
 @media (max-width: 768px) { .inner { grid-template-columns: repeat(2, minmax(0, 1fr)); } .brand { grid-column: 1 / -1; } }

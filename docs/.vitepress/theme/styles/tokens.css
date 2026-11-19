@@ -10,8 +10,7 @@
   --rw-flat: #1e765b;
   --rw-flat-hover: #16604a;
   --rw-teal: #0d5450;
-  --rw-cream: #f6f3ec;
-  --rw-paper: #ede9df;
+  --rw-soft: #f4f6f5;
   --rw-mint: #e7f3ec;
   --rw-night: #0e1814;
   --rw-deep: linear-gradient(150deg, #0f5e58 0%, #0d4743 40%, #14231e 100%);
@@ -24,13 +23,13 @@
   --rw-beta-bg: #fff5d6;   --rw-beta-fg: #7a4f00;
   --rw-danger-bg: #ffeae3; --rw-danger-fg: #a33a1c;
 
-  /* The "leaf" corner from the logo mark: big top-left, tight elsewhere */
-  --rw-r-plate: 40px 12px 12px 12px;
-  --rw-r-card: 24px 7px 7px 7px;
-  --rw-r-win: 16px 6px 6px 6px;
-  --rw-r-btn: 14px 4px 4px 4px;
-  --rw-r-chip: 10px 3px 3px 3px;
-  --rw-r-sm: 8px 3px 3px 3px;
+  /* Corner radii */
+  --rw-r-plate: 16px;
+  --rw-r-card: 12px;
+  --rw-r-win: 10px;
+  --rw-r-btn: 8px;
+  --rw-r-chip: 6px;
+  --rw-r-sm: 6px;
 
   --rw-hdr: rgba(255, 255, 255, 0.86);
   --rw-raised: #ffffff;
@@ -52,8 +51,8 @@
   --vp-c-brand-soft: rgba(46, 152, 101, 0.14);
 
   --vp-c-bg: #ffffff;
-  --vp-c-bg-alt: var(--rw-cream);
-  --vp-c-bg-soft: var(--rw-cream);
+  --vp-c-bg-alt: var(--rw-soft);
+  --vp-c-bg-soft: var(--rw-soft);
   --vp-c-bg-elv: #ffffff;
 
   --vp-c-text-1: var(--rw-ink);
@@ -87,22 +86,22 @@
   --vp-code-color: var(--rw-free-fg);
   --vp-code-block-bg: var(--rw-ink);
   --vp-code-block-color: #f2efe7;
-  --vp-code-block-divider-color: rgba(246, 243, 236, 0.1);
+  --vp-code-block-divider-color: rgba(255, 255, 255, 0.1);
   --vp-code-tab-bg: var(--rw-ink);
-  --vp-code-tab-divider: rgba(246, 243, 236, 0.1);
+  --vp-code-tab-divider: rgba(255, 255, 255, 0.1);
   --vp-code-tab-text-color: #93a79c;
   --vp-code-tab-hover-text-color: #f2efe7;
   --vp-code-tab-active-text-color: #f2efe7;
   --vp-code-tab-active-bar-color: #4cb683;
   --vp-code-line-highlight-color: rgba(127, 212, 169, 0.12);
-  --vp-code-copy-code-bg: rgba(246, 243, 236, 0.06);
-  --vp-code-copy-code-hover-bg: rgba(246, 243, 236, 0.12);
-  --vp-code-copy-code-border-color: rgba(246, 243, 236, 0.16);
-  --vp-code-copy-code-hover-border-color: rgba(246, 243, 236, 0.3);
+  --vp-code-copy-code-bg: rgba(255, 255, 255, 0.06);
+  --vp-code-copy-code-hover-bg: rgba(255, 255, 255, 0.12);
+  --vp-code-copy-code-border-color: rgba(255, 255, 255, 0.16);
+  --vp-code-copy-code-hover-border-color: rgba(255, 255, 255, 0.3);
   --vp-code-copy-copied-text-content: 'Copied';
   --vp-code-lang-color: #93a79c;
 
-  --vp-local-search-bg: var(--rw-cream);
+  --vp-local-search-bg: #ffffff;
   --vp-local-search-result-bg: #ffffff;
   --vp-local-search-result-border: rgba(20, 35, 30, 0.11);
   --vp-local-search-result-selected-bg: var(--rw-mint);
@@ -140,10 +139,10 @@
   --vp-c-text-2: #b0c2b7;
   --vp-c-text-3: #93a79c;
 
-  --vp-c-divider: rgba(246, 243, 236, 0.11);
-  --vp-c-border: rgba(246, 243, 236, 0.22);
+  --vp-c-divider: rgba(255, 255, 255, 0.11);
+  --vp-c-border: rgba(255, 255, 255, 0.22);
   --vp-c-gutter: rgba(0, 0, 0, 0.4);
-  --vp-c-default-soft: rgba(246, 243, 236, 0.06);
+  --vp-c-default-soft: rgba(255, 255, 255, 0.06);
 
   --vp-button-brand-bg: #4cb683;
   --vp-button-brand-hover-bg: #63c796;
@@ -158,7 +157,7 @@
 
   --vp-local-search-bg: #121d18;
   --vp-local-search-result-bg: #15201b;
-  --vp-local-search-result-border: rgba(246, 243, 236, 0.11);
+  --vp-local-search-result-border: rgba(255, 255, 255, 0.11);
   --vp-local-search-result-selected-bg: #153027;
   --vp-local-search-result-selected-border: #4cb683;
   --vp-local-search-highlight-text: #f2efe7;

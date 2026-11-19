@@ -101,7 +101,7 @@ h1 { margin: 8px 0 14px; font-size: clamp(40px, 5vw, 60px); line-height: 1.02; f
 .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 28px; padding-bottom: 8px; }
 .flt {
   display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 1px solid var(--vp-c-divider);
-  border-radius: 12px 4px 4px 4px; background: var(--rw-raised); color: var(--vp-c-text-2); font-size: 14px; font-weight: 600; transition: all .15s;
+  border-radius: 8px; background: var(--rw-raised); color: var(--vp-c-text-2); font-size: 14px; font-weight: 600; transition: all .15s;
 }
 .flt:hover { border-color: var(--vp-c-border); color: var(--vp-c-text-1); }
 .flt.on { background: var(--vp-c-text-1); color: var(--vp-c-bg); border-color: var(--vp-c-text-1); }
